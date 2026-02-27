@@ -1,6 +1,7 @@
 // bmiCalculator.ts:
 // Define an interface to structure the expected input data. Thus ensuring type safety for our parsed arguments later in the script.
-interface HeightWeightValues {
+export interface HeightWeightValues {
+  // Export added for Exercise 9.5
   heightInCm: number;
   weightInKg: number;
 }
@@ -29,7 +30,11 @@ const parseHeightWeightArguments = (args: string[]): HeightWeightValues => {
 // Define Union Type of string literals. A strict "allow-list" of function return values.
 type bmiReport = "low BMI" | "normal range" | "Overweight" | "invalid input";
 // calculateBmi: takes two numbers and returns one of our predefined status strings.
-const calculateBmi = (heightInCm: number, weightInKg: number): bmiReport => {
+export const calculateBmi = (
+  //  Export added for Exercise 9.5
+  heightInCm: number,
+  weightInKg: number,
+): bmiReport => {
   // BMI formula uses meters, so we divide the input centimeters by 100.
   const heightInM = heightInCm / 100;
   const bmi = weightInKg / (heightInM * heightInM);
@@ -46,18 +51,22 @@ const calculateBmi = (heightInCm: number, weightInKg: number): bmiReport => {
       return "invalid input";
   }
 };
-
-try {
-  // Pass process.argv (the array of terminal inputs) to our parser.
-  const { heightInCm, weightInKg } = parseHeightWeightArguments(process.argv);
-  // Parsed numbers fall through to the calculator. Log the string result.
-  console.log(calculateBmi(heightInCm, weightInKg));
-} catch (error: unknown) {
-  // If anything fails (wrong number of args, not numbers), catch it here.
-  let errorMessage = "Something bad happened.";
-  // Since 'error' is 'unknown' type, check if it's an instance of Error to access .message.
-  if (error instanceof Error) {
-    errorMessage += " Error: " + error.message;
-  } // Log the final error message
-  console.log(errorMessage);
+// Execution switch, added for Exercise 9.5
+if (require.main === module) {
+  // if the file is being run directly via the terminal (e.g., npm run calculateBmi ...):
+  try {
+    // Pass process.argv (the array of terminal inputs) to our parser.
+    const { heightInCm, weightInKg } = parseHeightWeightArguments(process.argv);
+    // Parsed numbers fall through to the calculator. Log the string result.
+    console.log(calculateBmi(heightInCm, weightInKg));
+  } catch (error: unknown) {
+    // If anything fails (wrong number of args, not numbers), catch it here.
+    let errorMessage = "Something bad happened.";
+    // Since 'error' is 'unknown' type, check if it's an instance of Error to access .message.
+    if (error instanceof Error) {
+      errorMessage += " Error: " + error.message;
+    } // Log the final error message
+    console.log(errorMessage);
+  }
+  // else, if being imported by index.ts, ignore the above block of code entirely.
 }
