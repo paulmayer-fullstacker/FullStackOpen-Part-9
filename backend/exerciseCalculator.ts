@@ -39,8 +39,8 @@ interface TrainingReport {
   target: number;
   average: number;
 }
-// The main function that applies logic to the validated numeric data.
-const calculateExercises = (
+// The main function that applies logic to the validated numeric data. // Export for exercise 9.7.
+export const calculateExercises = (
   trainingHrsPerDay: number[],
   targetHrs: number,
 ): TrainingReport => {
