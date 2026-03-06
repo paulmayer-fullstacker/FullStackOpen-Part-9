@@ -1,0 +1,8 @@
+### Test Ping
+GET http://localhost:3001/api/ping
+
+### Test Get All Diagnoses
+GET http://localhost:3001/api/diagnoses
+
+### Test To Get All Patients (Without SSNs)
+GET http://localhost:3001/api/patients

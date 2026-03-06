@@ -1,4 +1,5 @@
-// index.ts
+// index.ts:
+
 import express from "express"; // Import the Express framework to handle HTTP requests.
 import cors from "cors"; // Install cors and inport: npm install cors, npm install --save-dev @types/cors.
 
