@@ -6,3 +6,49 @@ GET http://localhost:3001/api/diagnoses
 
 ### Test To Get All Patients (Without SSNs)
 GET http://localhost:3001/api/patients
+
+
+### Test to Post a valid new patient (Assert: success, return patient)
+POST http://localhost:3001/api/patients
+Content-Type: application/json
+
+{
+  "name": "John Smith",
+  "dateOfBirth": "1975-10-13",
+  "ssn": "12345-679",
+  "gender": "female",
+  "occupation": "Softy"
+}
+
+### Test Post with invalid Gender (Assert: fail with 400, " Incorrect or missing gender: <incorrect value>")
+POST http://localhost:3001/api/patients
+Content-Type: application/json
+
+{
+  "name": "John Jones",
+  "dateOfBirth": "1975-10-14",
+  "ssn": "12345-679",
+  "gender": "blue",
+  "occupation": "Softy"
+}
+
+### Test Post with missing fields (Assert: fail with 400, "Incorrect data: some fields are missing")
+POST http://localhost:3001/api/patients
+Content-Type: application/json
+
+{
+  "name": "Jack Jones",
+  "gender": "male"
+}
+
+### Test Post with malformed Date (Assert: fail with 400, Incorrect or missing date: <incorrect value>)
+POST http://localhost:3001/api/patients
+Content-Type: application/json
+
+{
+  "name": "Jack Dee",
+  "dateOfBirth": "Jack Dee",
+  "ssn": "12345-679",
+  "gender": "male",
+  "occupation": "Softy"
+}
