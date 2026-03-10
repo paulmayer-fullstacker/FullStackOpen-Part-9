@@ -20,7 +20,7 @@ Content-Type: application/json
   "occupation": "Softy"
 }
 
-### Test Post with invalid Gender (Assert: fail with 400, " Incorrect or missing gender: <incorrect value>")
+### Test Post with invalid Gender (Assert: fail with 400, "Invalid option: expected one of \"male\"|\"female\"|\"other\"")
 POST http://localhost:3001/api/patients
 Content-Type: application/json
 
@@ -32,7 +32,7 @@ Content-Type: application/json
   "occupation": "Softy"
 }
 
-### Test Post with missing fields (Assert: fail with 400, "Incorrect data: some fields are missing")
+### Test Post with missing fields (Assert: fail with 400, For each missing field: "Invalid input: <detailed error message>")
 POST http://localhost:3001/api/patients
 Content-Type: application/json
 
@@ -41,7 +41,7 @@ Content-Type: application/json
   "gender": "male"
 }
 
-### Test Post with malformed Date (Assert: fail with 400, Incorrect or missing date: <incorrect value>)
+### Test Post with malformed Date (Assert: fail with 400, "Invalid ISO date")
 POST http://localhost:3001/api/patients
 Content-Type: application/json
 

@@ -1,8 +1,10 @@
 // src/routes/patients.ts:
 
-import express from "express";
-import patientService from "../services/patientService";
-import toNewPatient from "../utils";
+import express, { Request, Response, NextFunction } from "express"; // Import express and TS type definitions. NextFunction: type for the next callback.
+import patientService from "../services/patientService"; // Import the patientService business logic.
+import toNewPatient from "../utils"; // Import Zod validation logic. Used to sanitise the incoming data.
+import { z } from "zod"; // Import z to handle Zod-specific errors.
+import { NewPatient, Patient } from "../types"; // Import specific types.
 // Express Router: A Router instance is a complete middleware and routing system (a mini-app).
 const router = express.Router();
 // Route Mapping: Since this router was mounted at '/api/patients' in index.ts, this '/' path refers to the base URL '/api/patients
@@ -12,24 +14,44 @@ router.get("/", (_req, res) => {
   res.send(patientService.getNonSensitiveEntries());
 });
 
-// Define a POST route handler at the root path ('/') of this router. POST /api/patients. See 'app.use("/api/patients", patientRouter)' in index.ts.
-router.post("/", (req, res) => {
+// newPatientParser middleware to clean up the POST route; acting as a gatekeeper, before reaching the route logic.
+const newPatientParser = (req: Request, _res: Response, next: NextFunction) => {
   try {
-    // Validate the body using the utility function. This returns a typed NewPatient object or throws an error.
-    const newPatientEntry = toNewPatient(req.body);
-    // Having validated newPatientEntry, pass it to the service layer which handles the 'database' interaction (adding an ID and pushing to the array).
-    const addedPatient = patientService.addPatient(newPatientEntry);
-    // send the newly created patient object back to the client as JSON. Thus confirming the operation was successful and providing the client with the new id.
-    res.json(addedPatient);
+    toNewPatient(req.body); // Validates and throws if invalid
+    next(); // Moves to the next handler if valid
   } catch (error: unknown) {
-    // If toNewPatient or addPatient fails, initialize a generic error message.
-    let errorMessage = "Something went wrong.";
-    // Since 'error' is of type 'unknown', use instanceof Error to safely access the '.message' property with type-safety.
-    if (error instanceof Error) {
-      errorMessage += " Error: " + error.message;
-    }
-    res.status(400).send(errorMessage); // Respond with 400 (Bad Request) status code to inform the client that their sent data did not pass validation.
+    next(error); // Passes the Zod error to the errorMiddleware
   }
-});
+};
+
+// This Error Middleware is a centralized place to catch all errors occurring in this router. Four arguments (error, req, res, next).
+const errorMiddleware = (
+  error: unknown,
+  _req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  if (error instanceof z.ZodError) {
+    // If Zod validation fails, send the 400 Bad Request immediately. ZodError contains an .issues array detailing which fields failed validation.
+    res.status(400).send({ error: error.issues });
+  } else {
+    // If Zod validation passes, but some other error occurs, pass it to the global Express error handler
+    next(error);
+  }
+};
+
+// Define a POST route handler at the root path ('/') of this router. POST /api/patients. See 'app.use("/api/patients", patientRouter)' in index.ts.
+router.post(
+  "/",
+  newPatientParser,
+  (req: Request<unknown, unknown, NewPatient>, res: Response<Patient>) => {
+    // At this point, we are guaranteed that req.body is a valid NewPatient.
+    const addedPatient = patientService.addPatient(req.body);
+    res.json(addedPatient);
+  },
+);
+
+// Register the error middleware. Must be placed after the routes, to catch their errors.
+router.use(errorMiddleware);
 
 export default router;

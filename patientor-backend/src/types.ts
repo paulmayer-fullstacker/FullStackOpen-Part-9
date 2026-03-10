@@ -1,4 +1,7 @@
-// src/types.ts
+// src/types.ts:
+
+import { z } from "zod";
+import { NewPatientSchema } from "./utils";
 
 export interface Diagnosis {
   code: string;
@@ -30,4 +33,5 @@ export type NonSensitivePatient = Omit<Patient, "ssn">;
 
 // To create a new patient we need a data type to hold the data coming in from the request.
 // Since the server generates the patient id, the incoming object is a Patient minus the id field.
-export type NewPatient = Omit<Patient, "id">;
+// Instead of manual Omit, infer the type from our Zod Schema. Thus, ensuring that if we modify fields in the Zod schema, this type updates automatically.
+export type NewPatient = z.infer<typeof NewPatientSchema>;
