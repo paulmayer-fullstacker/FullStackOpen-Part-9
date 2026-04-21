@@ -1,0 +1,67 @@
+### Get all entries
+GET http://localhost:3000/api/diaries
+
+### Success Case: Create a valid entry
+POST http://localhost:3000/api/diaries
+Content-Type: application/json
+
+{
+  "date": "2026-05-01",
+  "weather": "sunny",
+  "visibility": "good",
+  "comment": "Rest client test"
+}
+
+### Error Case: Invalid Date Format
+POST http://localhost:3000/api/diaries
+Content-Type: application/json
+
+{
+  "date": "20-05-2026",
+  "weather": "cloudy",
+  "visibility": "good",
+  "comment": "Should trigger 400 Bad Request. Error: Incorrect date: <Input Date>"
+}
+
+### Error Case: Invalid Weather (Should trigger 400 Bad Request)
+POST http://localhost:3000/api/diaries
+Content-Type: application/json
+
+{
+  "date": "2026-05-02",
+  "weather": "tornado",
+  "visibility": "good",
+  "comment": "Should trigger 400 Bad Request. Error: Incorrect weather: tornado"
+}
+
+### Error Case: Missing Visibility (Should trigger 400 Bad Request)
+POST http://localhost:3000/api/diaries
+Content-Type: application/json
+
+{
+  "date": "2026-05-03",
+  "weather": "cloudy",
+  "comment": "Should trigger 400 Bad Request. Error: Incorrect data: a field missing"
+}
+
+### Test Case: Empty Comment (400 Bad Request. Error: Comment is required. Min length: 10 characters)
+POST http://localhost:3000/api/diaries
+Content-Type: application/json
+
+{
+  "date": "2026-01-01",
+  "weather": "sunny",
+  "visibility": "good",
+  "comment": ""
+}
+
+### Test Case: Whitespace Only (400 Bad Request. Error: Comment is required. Min length: 10 characters)
+POST http://localhost:3000/api/diaries
+Content-Type: application/json
+
+{
+  "date": "2026-01-01",
+  "weather": "sunny",
+  "visibility": "good",
+  "comment": "   "
+}
