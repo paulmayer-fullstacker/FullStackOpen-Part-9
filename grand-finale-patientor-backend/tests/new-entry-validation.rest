@@ -1,0 +1,76 @@
+### POST valid HealthCheck Entry
+POST http://localhost:3001/api/patients/d2773336-f723-11e9-8f0b-362b9e155667/entries
+Content-Type: application/json
+
+{
+  "type": "HealthCheck",
+  "date": "2023-10-25",
+  "specialist": "Dr. House",
+  "description": "Annual physical checkup",
+  "healthCheckRating": 0
+}
+
+### HealthCheck: POST Error: Missing required fields (description)
+POST http://localhost:3001/api/patients/d2773336-f723-11e9-8f0b-362b9e155667/entries
+Content-Type: application/json
+
+{
+  "type": "HealthCheck",
+  "date": "2023-10-25",
+  "specialist": "Dr. House",
+  "healthCheckRating": 1
+}
+
+### HealthCheck Entry: POST Error: Invalid HealthCheckRating (Value out of range)
+POST http://localhost:3001/api/patients/d2773336-f723-11e9-8f0b-362b9e155667/entries
+Content-Type: application/json
+
+{
+  "type": "HealthCheck",
+  "date": "2023-10-25",
+  "specialist": "Dr. House",
+  "description": "Invalid HealthCheckRating. Valid HealthCheckRating: 0-4",
+  "healthCheckRating": 5
+}
+
+### Test POST a valid Hospital Entry
+POST http://localhost:3001/api/patients/d2773336-f723-11e9-8f0b-362b9e155667/entries
+Content-Type: application/json
+
+{
+  "type": "Hospital",
+  "date": "2023-09-15",
+  "specialist": "Dr. John",
+  "description": "Patient admitted for observation. All data valid.",
+  "diagnosisCodes": ["S03.5", "L20.0"],
+  "discharge": {
+    "date": "2023-09-17",
+    "criteria": "Allergic symptoms resolved; patient stable for home recovery."
+  }
+}
+
+### Hospital Entry: POST Error: Missing Discharge in Hospital Entry
+POST http://localhost:3001/api/patients/d2773336-f723-11e9-8f0b-362b9e155667/entries
+Content-Type: application/json
+
+{
+  "type": "Hospital",
+  "date": "2023-10-25",
+  "specialist": "Dr. John",
+  "description": "Missing discharge data"
+}
+
+### POST Error: Invalid Date Format
+POST http://localhost:3001/api/patients/d2773336-f723-11e9-8f0b-362b9e155667/entries
+Content-Type: application/json
+
+{
+  "type": "Hospital",
+  "date": "25-10-2023",
+  "specialist": "Dr. John",
+  "description": "Stomach Ache",
+  "discharge": {
+    "date": "2023-10-27",
+    "criteria": "Invalid date format"
+  }
+}
